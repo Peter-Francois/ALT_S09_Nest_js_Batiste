@@ -43,7 +43,7 @@ export class FormationService {
     return this.formations;
   }
 
-  getformationById(id: number): FormationInterface | null {
+  getformationById(id: number): FormationInterface | undefined {
     return this.formations.find((formation) => formation.id == id);
   }
 

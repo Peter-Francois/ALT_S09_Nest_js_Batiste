@@ -5,13 +5,15 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
 import { FormationService } from './formation.service';
 import type { CreateFormationDto } from './Dtos/create.formation.dto';
-import type { ResponseInterface } from './interface/response.interface';
+import type { ResponseInterface } from '../utils/interface/response.interface';
 import type { UpdateFormationDto } from './Dtos/update.formation.dto';
+import { FormationInterface } from './interface/formation.interface';
 
 @Controller('formations')
 export class FormationController {
@@ -19,21 +21,26 @@ export class FormationController {
 
   // * `GET /students` - Récupérer tous les étudiants
   @Get()
-  getAll(): ResponseInterface {
-    const formation = this.formationService.getformations();
-    if (formation.length == 0) {
-      return { data: {}, message: `Il n'y a pas de formation dans la liste` };
+  getAll(): ResponseInterface<{ formations: FormationInterface[] | [] }> {
+    const formations = this.formationService.getformations();
+    if (formations.length == 0) {
+      return {
+        data: { formations },
+        message: `Il n'y a pas de formation dans la liste`,
+      };
     }
     return {
-      data: { formation },
-      message: `Voici la liste complete des formations (${formation.length} formations)`,
+      data: { formations },
+      message: `Voici la liste complete des formations (${formations.length} formations)`,
     };
   }
 
   // * `GET /students/:id` - Récupérer un étudiant par son ID
   @Get(':id')
-  getById(@Param('id') id: string): ResponseInterface {
-    const formation = this.formationService.getformationById(+id);
+  getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): ResponseInterface<{ formation: FormationInterface | null }> {
+    const formation = this.formationService.getformationById(id);
     if (!formation) {
       throw new NotFoundException(
         `L'id ${id} n'existe pas dans la liste des formations`,
@@ -47,12 +54,12 @@ export class FormationController {
 
   // * `POST /students` - Créer un nouvel étudiant
   @Post()
-  create(@Body() body: CreateFormationDto): ResponseInterface {
+  create(@Body() body: CreateFormationDto): ResponseInterface<{
+    formation: FormationInterface;
+  }> {
     const formation = this.formationService.createformation(body);
-    const formations = this.formationService.getformations();
-    //throw NotfoundExeption
     return {
-      data: { formation, formations },
+      data: { formation },
       message: `La formation: "${formation.name}" a était ajouté à la liste des formations`,
     };
   }
@@ -60,10 +67,10 @@ export class FormationController {
   // * `PUT /students/:id` - Mettre à jour un étudiant existant
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateFormationDto,
-  ): ResponseInterface {
-    const formation = this.formationService.updateformation(+id, body);
+  ): ResponseInterface<{ formation: FormationInterface }> {
+    const formation = this.formationService.updateformation(id, body);
     return {
       data: { formation },
       message: `La formation: "${formation.name}" a était mis à jour`,
@@ -71,11 +78,10 @@ export class FormationController {
   }
   // * `DELETE /students/:id` - Supprimer un étudiant
   @Delete(':id')
-  delete(@Param('id') id: string): ResponseInterface {
-    const formation = this.formationService.deleteformation(+id);
-    const formations = this.getAll();
+  delete(@Param('id', ParseIntPipe) id: number): ResponseInterface<null> {
+    const formation = this.formationService.deleteformation(id);
     return {
-      data: { formations },
+      data: null,
       message: `L'étudiant ${formation.name} a était retiré de la liste des étudiants`,
     };
   }
