@@ -128,9 +128,7 @@ export class StudentService {
     const student = this.getStudentById(id);
     const updatedStudent = {
       ...student,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      groupeId: body.groupeId,
+      ...body,
       updatedAt: new Date(),
     };
     return updatedStudent;

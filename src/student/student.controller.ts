@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  ValidationPipe,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import type { CreateStudentDto } from './Dtos/create.student.dto';
@@ -55,11 +56,15 @@ export class StudentController {
 
   // * `POST /students` - Créer un nouvel étudiant
   @Post()
-  create(@Body() body: CreateStudentDto): ResponseInterface<{
+  create(
+    @Body(new ValidationPipe()) body: CreateStudentDto,
+  ): ResponseInterface<{
     student: StudentInterface;
     students: StudentInterface[];
   }> {
+    console.log('🚀 ~ StudentController ~ create ~ body:', body);
     const student = this.studentService.createStudent(body);
+    console.log("🚀 ~ StudentController ~ create ~ student:", student)
     const students = this.studentService.getStudents();
     //throw NotfoundExeption
     return {
@@ -75,6 +80,9 @@ export class StudentController {
     @Body() body: UpdateStudentDto,
   ): ResponseInterface<{ student: StudentInterface }> {
     const student = this.studentService.updateStudent(id, body);
+    if (!student) throw new Error();
+    console.log('🚀 ~ StudentController ~ update ~ student:', student);
+
     return {
       data: { student },
       message: `L'étudiant ${student.firstName} a était mis à jour`,
