@@ -13,3 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Student {
+  id             Int       @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime?
+  discordWebHook String    @unique
+  groupeId       Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+}
+
+model Formation {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
