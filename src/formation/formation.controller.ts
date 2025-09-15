@@ -58,16 +58,31 @@ export class FormationController {
 
   // * `POST /students` - Créer un nouvel étudiant
   @Post()
-  create(@Body() body: CreateFormationDto): ResponseInterface<{
-    formation: FormationInterface;
-  }> {
-    const formation = this.formationService.createformation(body);
+  async create(@Body() body: CreateFormationDto): Promise<
+    ResponseInterface<{
+      newFormation: FormationInterface;
+    }>
+  > {
+    const newFormation = await this.formationService.createformation(body);
     return {
-      data: { formation },
-      message: `La formation: "${formation.name}" a était ajouté à la liste des formations`,
+      data: { newFormation },
+      message: `La formation: "${newFormation.name}" a était ajouté à la liste des formations`,
     };
   }
 
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateFormationDto,
+  ): Promise<ResponseInterface<{ formation: FormationInterface }>> {
+    const updateFormation = await this.formationService.updateformation(
+      id,
+      body,
+    );
+    return {
+      message: `La formation: "${updateFormation.name}" a était ajouté à la liste des formations`,
+    };
+  }
   // // * `PUT /students/:id` - Mettre à jour un étudiant existant
   // @Put(':id')
   // update(
@@ -80,6 +95,16 @@ export class FormationController {
   //     message: `La formation: "${formation.name}" a était mis à jour`,
   //   };
   // }
+
+  @Delete(':id')
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ResponseInterface<{ formation: FormationInterface }>> {
+    await this.formationService.deleteformation(id);
+    return {
+      message: `La formation a était retiré de la liste des formations`,
+    };
+  }
   // // * `DELETE /students/:id` - Supprimer un étudiant
   // @Delete(':id')
   // delete(@Param('id', ParseIntPipe) id: number): ResponseInterface<null> {

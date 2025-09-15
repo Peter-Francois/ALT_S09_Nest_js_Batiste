@@ -50,18 +50,19 @@ export class FormationService {
     return this.prisma.formation.findUnique({ where: { id: id } });
   }
 
-  createformation(body: CreateFormationDto): FormationInterface {
-    this.index++;
-    const formation = {
-      ...body,
-      id: this.index,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    this.formations.push(formation);
-    return formation;
+  createformation(body: CreateFormationDto): Promise<FormationInterface> {
+    return this.prisma.formation.create({ data: { name: body.name } });
   }
 
+  updateformation(
+    id: number,
+    body: UpdateFormationDto,
+  ): Promise<FormationInterface> {
+    return this.prisma.formation.update({
+      where: { id: id },
+      data: { name: body.name },
+    });
+  }
   // updateformation(id: number, body: UpdateFormationDto): FormationInterface {
   //   const formation = this.getformationById(id);
   //   const updatedStudent = {
@@ -72,6 +73,9 @@ export class FormationService {
   //   return updatedStudent;
   // }
 
+  deleteformation(id: number): Promise<FormationInterface> {
+    return this.prisma.formation.delete({ where: { id: id } });
+  }
   // deleteformation(id: number): FormationInterface {
   //   const formationToDelete = this.getformationById(id);
   //   this.formations.filter((student) => student.id != formationToDelete.id);
