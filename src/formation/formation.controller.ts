@@ -21,8 +21,12 @@ export class FormationController {
 
   // * `GET /students` - Récupérer tous les étudiants
   @Get()
-  getAll(): ResponseInterface<{ formations: FormationInterface[] | [] }> {
-    const formations = this.formationService.getformations();
+  async getAll(): Promise<
+    ResponseInterface<{
+      formations: FormationInterface[] | [];
+    }>
+  > {
+    const formations = await this.formationService.getformations();
     if (formations.length == 0) {
       return {
         data: { formations },
@@ -37,10 +41,10 @@ export class FormationController {
 
   // * `GET /students/:id` - Récupérer un étudiant par son ID
   @Get(':id')
-  getById(
+  async getById(
     @Param('id', ParseIntPipe) id: number,
-  ): ResponseInterface<{ formation: FormationInterface | null }> {
-    const formation = this.formationService.getformationById(id);
+  ): Promise<ResponseInterface<{ formation: FormationInterface | null }>> {
+    const formation = await this.formationService.getformationById(id);
     if (!formation) {
       throw new NotFoundException(
         `L'id ${id} n'existe pas dans la liste des formations`,
@@ -64,25 +68,25 @@ export class FormationController {
     };
   }
 
-  // * `PUT /students/:id` - Mettre à jour un étudiant existant
-  @Put(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateFormationDto,
-  ): ResponseInterface<{ formation: FormationInterface }> {
-    const formation = this.formationService.updateformation(id, body);
-    return {
-      data: { formation },
-      message: `La formation: "${formation.name}" a était mis à jour`,
-    };
-  }
-  // * `DELETE /students/:id` - Supprimer un étudiant
-  @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): ResponseInterface<null> {
-    const formation = this.formationService.deleteformation(id);
-    return {
-      data: null,
-      message: `L'étudiant ${formation.name} a était retiré de la liste des étudiants`,
-    };
-  }
+  // // * `PUT /students/:id` - Mettre à jour un étudiant existant
+  // @Put(':id')
+  // update(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() body: UpdateFormationDto,
+  // ): ResponseInterface<{ formation: FormationInterface }> {
+  //   const formation = this.formationService.updateformation(id, body);
+  //   return {
+  //     data: { formation },
+  //     message: `La formation: "${formation.name}" a était mis à jour`,
+  //   };
+  // }
+  // // * `DELETE /students/:id` - Supprimer un étudiant
+  // @Delete(':id')
+  // delete(@Param('id', ParseIntPipe) id: number): ResponseInterface<null> {
+  //   const formation = this.formationService.deleteformation(id);
+  //   return {
+  //     data: null,
+  //     message: `L'étudiant ${formation.name} a était retiré de la liste des étudiants`,
+  //   };
+  // }
 }

@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { FormationInterface } from './interface/formation.interface';
 import { CreateFormationDto } from './Dtos/create.formation.dto';
 import { UpdateFormationDto } from './Dtos/update.formation.dto';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class FormationService {
+  constructor(private readonly prisma: PrismaService) {}
+
   private formations: FormationInterface[] = [
     {
       id: 1,
@@ -39,12 +42,12 @@ export class FormationService {
   ];
   private index: number = this.formations.length;
 
-  getformations(): FormationInterface[] | [] {
-    return this.formations;
+  getformations(): Promise<FormationInterface[] | []> {
+    return this.prisma.formation.findMany({});
   }
 
-  getformationById(id: number): FormationInterface | undefined {
-    return this.formations.find((formation) => formation.id == id);
+  getformationById(id: number): Promise<FormationInterface | undefined> {
+    return this.prisma.formation.findUnique({ where: { id: id } });
   }
 
   createformation(body: CreateFormationDto): FormationInterface {
@@ -59,19 +62,19 @@ export class FormationService {
     return formation;
   }
 
-  updateformation(id: number, body: UpdateFormationDto): FormationInterface {
-    const formation = this.getformationById(id);
-    const updatedStudent = {
-      ...formation,
-      name: body.name,
-      updatedAt: new Date(),
-    };
-    return updatedStudent;
-  }
+  // updateformation(id: number, body: UpdateFormationDto): FormationInterface {
+  //   const formation = this.getformationById(id);
+  //   const updatedStudent = {
+  //     ...formation,
+  //     name: body.name,
+  //     updatedAt: new Date(),
+  //   };
+  //   return updatedStudent;
+  // }
 
-  deleteformation(id: number): FormationInterface {
-    const formationToDelete = this.getformationById(id);
-    this.formations.filter((student) => student.id != formationToDelete.id);
-    return formationToDelete;
-  }
+  // deleteformation(id: number): FormationInterface {
+  //   const formationToDelete = this.getformationById(id);
+  //   this.formations.filter((student) => student.id != formationToDelete.id);
+  //   return formationToDelete;
+  // }
 }
