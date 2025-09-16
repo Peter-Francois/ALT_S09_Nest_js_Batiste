@@ -10,10 +10,14 @@ import {
   Put,
 } from '@nestjs/common';
 import { FormationService } from './formation.service';
-import type { CreateFormationDto } from './Dtos/create.formation.dto';
-import type { ResponseInterface } from '../utils/interface/response.interface';
-import type { UpdateFormationDto } from './Dtos/update.formation.dto';
+import type { CreateFormationDto } from './dtos/create.formation.dto';
+import type {
+  ResponseInterface,
+  ResponseInterfaceWithoutData,
+} from '../utils/interface/response.interface';
+import type { UpdateFormationDto } from './dtos/update.formation.dto';
 import { FormationInterface } from './interface/formation.interface';
+import { Formation } from '@prisma/client';
 
 @Controller('formations')
 export class FormationController {
@@ -23,19 +27,17 @@ export class FormationController {
   @Get()
   async getAll(): Promise<
     ResponseInterface<{
-      formations: FormationInterface[] | [];
+      formations: Formation[] | [];
     }>
   > {
-    const formations = await this.formationService.getformations();
-    if (formations.length == 0) {
-      return {
-        data: { formations },
-        message: `Il n'y a pas de formation dans la liste`,
-      };
-    }
+    const formations = await this.formationService.get();
+
     return {
       data: { formations },
-      message: `Voici la liste complete des formations (${formations.length} formations)`,
+      message:
+        formations.length == 0
+          ? `Il n'y a pas de formation dans la liste`
+          : `Voici la liste complete des formations (${formations.length} formations)`,
     };
   }
 
@@ -43,8 +45,8 @@ export class FormationController {
   @Get(':id')
   async getById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ResponseInterface<{ formation: FormationInterface | null }>> {
-    const formation = await this.formationService.getformationById(id);
+  ): Promise<ResponseInterface<{ formation: Formation | null }>> {
+    const formation = await this.formationService.getById(id);
     if (!formation) {
       throw new NotFoundException(
         `L'id ${id} n'existe pas dans la liste des formations`,
@@ -60,13 +62,13 @@ export class FormationController {
   @Post()
   async create(@Body() body: CreateFormationDto): Promise<
     ResponseInterface<{
-      newFormation: FormationInterface;
+      newFormation: Formation;
     }>
   > {
-    const newFormation = await this.formationService.createformation(body);
+    const newFormation = await this.formationService.create(body);
     return {
       data: { newFormation },
-      message: `La formation: "${newFormation.name}" a était ajouté à la liste des formations`,
+      message: `La formation: "${newFormation.name}" a été ajoutée à la liste des formations`,
     };
   }
 
@@ -74,13 +76,15 @@ export class FormationController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateFormationDto,
-  ): Promise<ResponseInterface<{ formation: FormationInterface }>> {
-    const updateFormation = await this.formationService.updateformation(
-      id,
-      body,
-    );
+  ): Promise<ResponseInterfaceWithoutData> {
+    const updateFormation = await this.formationService.update(id, body);
+    if (!updateFormation)
+      throw new NotFoundException(
+        `L'id ${id} n'existe pas dans la liste des formations`,
+      );
+
     return {
-      message: `La formation: "${updateFormation.name}" a était ajouté à la liste des formations`,
+      message: `La formation: "${updateFormation.name}" a été ajoutée à la liste des formations`,
     };
   }
   // // * `PUT /students/:id` - Mettre à jour un étudiant existant
@@ -99,8 +103,14 @@ export class FormationController {
   @Delete(':id')
   async delete(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ResponseInterface<{ formation: FormationInterface }>> {
-    await this.formationService.deleteformation(id);
+  ): Promise<ResponseInterfaceWithoutData> {
+    const formation = await this.formationService.getById(id);
+    if (!formation)
+      throw new NotFoundException(
+        `L'id ${id} n'existe pas dans la liste des formations`,
+      );
+
+    await this.formationService.delete(id);
     return {
       message: `La formation a était retiré de la liste des formations`,
     };
