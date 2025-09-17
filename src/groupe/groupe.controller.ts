@@ -10,14 +10,20 @@ import {
 import { GroupeService } from './groupe.service';
 import { CreateGroupeDto } from './dto/create-groupe.dto';
 import { UpdateGroupeDto } from './dto/update-groupe.dto';
+import type { ResponseInterfaceWithoutData } from 'src/utils/interface/response.interface';
 
-@Controller('groupe')
+@Controller('groups')
 export class GroupeController {
   constructor(private readonly groupeService: GroupeService) {}
 
   @Post()
-  create(@Body() createGroupeDto: CreateGroupeDto) {
-    return this.groupeService.create(createGroupeDto);
+  async create(
+    @Body() createGroupeDto: CreateGroupeDto,
+  ): Promise<ResponseInterfaceWithoutData> {
+    await this.groupeService.create(createGroupeDto);
+    return {
+      message: `La formation ${createGroupeDto.name} a bien était créé`,
+    };
   }
 
   @Get()

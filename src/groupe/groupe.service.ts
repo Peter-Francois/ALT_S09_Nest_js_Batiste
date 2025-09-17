@@ -1,11 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGroupeDto } from './dto/create-groupe.dto';
 import { UpdateGroupeDto } from './dto/update-groupe.dto';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class GroupeService {
-  create(createGroupeDto: CreateGroupeDto) {
-    return 'This action adds a new groupe';
+  constructor(private readonly prisma: PrismaService) {}
+  create(data: CreateGroupeDto) {
+    const { name, leadId, formationId } = data;
+    try {
+      const res = this.prisma.groupe.create({
+        data: {
+          name,
+          lead: {
+            connectOrCreate: {
+              create: { firstName: 'to be', lastName: 'to be' },
+              where: { id: leadId },
+            },
+          },
+          formation: {
+            connectOrCreate: {
+              create: { name },
+              where: { id: formationId },
+            },
+          },
+        },
+      });
+      return res;
+    } catch (error) {
+      throw new Error(
+        'Erreur lors de la création du groupe : ' + error.message,
+      );
+    }
+    //include: {formation: {select: {name: true}}}
+    // formation:{create: {name: formations}}
   }
 
   findAll() {
