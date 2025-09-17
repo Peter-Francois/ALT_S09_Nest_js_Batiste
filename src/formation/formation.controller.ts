@@ -10,12 +10,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { FormationService } from './formation.service';
-import type { CreateFormationDto } from './dtos/create.formation.dto';
+import type { CreateFormationDto } from './dto/create.formation.dto';
 import type {
   ResponseInterface,
   ResponseInterfaceWithoutData,
 } from '../utils/interface/response.interface';
-import type { UpdateFormationDto } from './dtos/update.formation.dto';
+import type { UpdateFormationDto } from './dto/update.formation.dto';
 // import { FormationInterface } from './interface/formation.interface';
 // On a commencé par faire une interface pour formation et après on a utilisé le Formation qui viens de prisma. Ce qui respect un peut moins les principe solide
 import { Formation } from '@prisma/client';

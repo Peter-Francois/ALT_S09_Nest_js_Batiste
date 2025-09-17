@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FormationInterface } from './interface/formation.interface';
-import { CreateFormationDto } from './dtos/create.formation.dto';
-import { UpdateFormationDto } from './dtos/update.formation.dto';
+import { CreateFormationDto } from './dto/create.formation.dto';
+import { UpdateFormationDto } from './dto/update.formation.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Formation } from '@prisma/client';
 
