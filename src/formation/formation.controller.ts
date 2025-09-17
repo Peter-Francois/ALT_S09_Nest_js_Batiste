@@ -16,7 +16,8 @@ import type {
   ResponseInterfaceWithoutData,
 } from '../utils/interface/response.interface';
 import type { UpdateFormationDto } from './dtos/update.formation.dto';
-import { FormationInterface } from './interface/formation.interface';
+// import { FormationInterface } from './interface/formation.interface';
+// On a commencé par faire une interface pour formation et après on a utilisé le Formation qui viens de prisma. Ce qui respect un peut moins les principe solide
 import { Formation } from '@prisma/client';
 
 @Controller('formations')
