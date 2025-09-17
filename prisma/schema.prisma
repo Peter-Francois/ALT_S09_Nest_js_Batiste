@@ -31,6 +31,10 @@ model Formation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
   Groupe    Groupe[]
+
+  // @@map("formation")  Pour rename la table dans la DB
+  // @@unique([key1, key2]) Pour s'assuré que table formation ne 
+  // permete pas une asociation des clef étrangere key1 et key2 identique
 }
 
 model Groupe {

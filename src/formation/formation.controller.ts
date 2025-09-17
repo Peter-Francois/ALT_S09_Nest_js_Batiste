@@ -78,14 +78,17 @@ export class FormationController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateFormationDto,
   ): Promise<ResponseInterfaceWithoutData> {
-    const updateFormation = await this.formationService.update(id, body);
-    if (!updateFormation)
+    console.log('🚀 ~ FormationController ~ update ~ body:', body);
+    const formation: Formation = await this.formationService.getById(id);
+    if (!formation) {
       throw new NotFoundException(
         `L'id ${id} n'existe pas dans la liste des formations`,
       );
+    }
 
+    await this.formationService.update(id, body);
     return {
-      message: `La formation: "${updateFormation.name}" a été ajoutée à la liste des formations`,
+      message: `La formation:${formation.name} a été ajoutée à la liste des formations`,
     };
   }
   // // * `PUT /students/:id` - Mettre à jour un étudiant existant
