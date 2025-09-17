@@ -22,6 +22,7 @@ model Student {
   groupeId       Int
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt()
+  groupe         Groupe    @relation(fields: [groupeId], references: [id])
 }
 
 model Formation {
@@ -29,5 +30,27 @@ model Formation {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
+  Groupe    Groupe[]
 }
 
+model Groupe {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(50)
+  formationId Int
+  leadId      Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt()
+  student     Student[]
+  formation   Formation  @relation(fields: [formationId], references: [id])
+  lead        TeamMember @relation(fields: [leadId], references: [id])
+}
+
+model TeamMember {
+  id         Int      @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  instructor Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+  Groupe     Groupe[]
+}
