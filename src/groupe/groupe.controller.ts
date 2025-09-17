@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { GroupeService } from './groupe.service';
 import { CreateGroupeDto } from './dto/create-groupe.dto';
 import { UpdateGroupeDto } from './dto/update-groupe.dto';
-import type { ResponseInterfaceWithoutData } from 'src/utils/interface/response.interface';
+import type { ResponseInterface } from 'src/utils/interface/response.interface';
+import { Groupe } from '@prisma/client';
 
 @Controller('groups')
 export class GroupeController {
@@ -19,11 +21,16 @@ export class GroupeController {
   @Post()
   async create(
     @Body() createGroupeDto: CreateGroupeDto,
-  ): Promise<ResponseInterfaceWithoutData> {
-    await this.groupeService.create(createGroupeDto);
-    return {
-      message: `La formation ${createGroupeDto.name} a bien était créé`,
-    };
+  ): Promise<ResponseInterface<Groupe>> {
+    try {
+      const res: Groupe = await this.groupeService.create(createGroupeDto);
+      return {
+        data: res,
+        message: `La formation ${createGroupeDto.name} a bien était créé`,
+      };
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
   }
 
   @Get()

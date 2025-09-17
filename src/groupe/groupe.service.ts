@@ -6,32 +6,24 @@ import { PrismaService } from 'prisma/prisma.service';
 @Injectable()
 export class GroupeService {
   constructor(private readonly prisma: PrismaService) {}
-  create(data: CreateGroupeDto) {
+  async create(data: CreateGroupeDto) {
     const { name, leadId, formationId } = data;
-    try {
-      const res = this.prisma.groupe.create({
-        data: {
-          name,
-          lead: {
-            connectOrCreate: {
-              create: { firstName: 'to be', lastName: 'to be' },
-              where: { id: leadId },
-            },
-          },
-          formation: {
-            connectOrCreate: {
-              create: { name },
-              where: { id: formationId },
-            },
-          },
+    const res = await this.prisma.groupe.create({
+      data: {
+        name,
+        lead: {
+          connect: { id: leadId },
         },
-      });
-      return res;
-    } catch (error) {
-      throw new Error(
-        'Erreur lors de la création du groupe : ' + error.message,
-      );
-    }
+        formation: {
+          connect: { id: formationId },
+        },
+      },
+      include: { formation: true },
+    });
+    console.log('🚀 ~ GroupeService ~ create ~ res:', res);
+
+    return res;
+
     //include: {formation: {select: {name: true}}}
     // formation:{create: {name: formations}}
   }
