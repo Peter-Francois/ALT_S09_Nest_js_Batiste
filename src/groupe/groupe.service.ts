@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateGroupeDto } from './dto/create-groupe.dto';
 import { UpdateGroupeDto } from './dto/update-groupe.dto';
 import { PrismaService } from 'prisma/prisma.service';
-import { Groupe, Student } from '@prisma/client';
+import { Groupe } from '@prisma/client';
 
 @Injectable()
 export class GroupeService {

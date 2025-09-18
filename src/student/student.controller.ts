@@ -11,9 +11,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
-import type { CreateStudentDto } from './Dtos/create.student.dto';
+import { CreateStudentDto } from './Dtos/create.student.dto';
 import type { ResponseInterface } from '../utils/interface/response.interface';
-import type { UpdateStudentDto } from './Dtos/update.student.dto';
+import { UpdateStudentDto } from './Dtos/update.student.dto';
 import { StudentInterface } from './interface/student.interface';
 
 @Controller('students')
@@ -64,7 +64,7 @@ export class StudentController {
   }> {
     console.log('🚀 ~ StudentController ~ create ~ body:', body);
     const student = this.studentService.createStudent(body);
-    console.log("🚀 ~ StudentController ~ create ~ student:", student)
+    console.log('🚀 ~ StudentController ~ create ~ student:', student);
     const students = this.studentService.getStudents();
     //throw NotfoundExeption
     return {
