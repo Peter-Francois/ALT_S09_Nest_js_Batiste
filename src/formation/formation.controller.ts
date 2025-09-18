@@ -38,7 +38,7 @@ export class FormationController {
       message:
         formations.length == 0
           ? `Il n'y a pas de formation dans la liste`
-          : `Voici la liste complete des formations (${formations.length} formations)`,
+          : `Voici la liste complete des formations (${formations.length} formation${formations.length == 1 ? '' : 's'})`,
     };
   }
 

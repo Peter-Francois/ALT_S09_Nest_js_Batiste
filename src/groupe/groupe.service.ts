@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateGroupeDto } from './dto/create-groupe.dto';
 import { UpdateGroupeDto } from './dto/update-groupe.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { Groupe, Student } from '@prisma/client';
 
 @Injectable()
 export class GroupeService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(data: CreateGroupeDto) {
+  async create(data: CreateGroupeDto): Promise<Groupe> {
     const { name, leadId, formationId } = data;
     const res = await this.prisma.groupe.create({
       data: {
@@ -20,7 +21,6 @@ export class GroupeService {
       },
       include: { formation: true },
     });
-    console.log('🚀 ~ GroupeService ~ create ~ res:', res);
 
     return res;
 
@@ -28,16 +28,31 @@ export class GroupeService {
     // formation:{create: {name: formations}}
   }
 
-  findAll() {
-    return `This action returns all groupe`;
+  async findAll(): Promise<Groupe[] | []> {
+    return await this.prisma.groupe.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} groupe`;
+  async findOne(id: number): Promise<Groupe | undefined> {
+    return await this.prisma.groupe.findUnique({
+      where: { id },
+      // include: { student: { omit: { id: true, lastName: true } } },
+    });
   }
 
-  update(id: number, updateGroupeDto: UpdateGroupeDto) {
-    return `This action updates a #${id} groupe`;
+  async update(
+    id: number,
+    updateGroupeDto: UpdateGroupeDto,
+  ): Promise<Groupe | undefined> {
+    const { formationId, leadId, name } = updateGroupeDto;
+
+    return await this.prisma.groupe.update({
+      where: { id },
+      data: {
+        name,
+        formationId,
+        leadId,
+      },
+    });
   }
 
   remove(id: number) {
